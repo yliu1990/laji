@@ -74,7 +74,7 @@ def postrecord(newrecord):
 	sqlite3.connect('data.db').close()
 
 
-@app.route('/queryresult', methods=['GET','POST'])
+@app.route('/queryresult', methods=['POST'])
 def queryresult():    # query based on input search criterias
  	if request.method == 'POST':
 		result = request.form
@@ -83,8 +83,8 @@ def queryresult():    # query based on input search criterias
 			dump = True;
 		else:
 			dump = False;
+		print ('fuck')
 		search = criterias(result['Name'], result['Property1'], result['Property1Min'], result['Property1Max'], result['Property2'], result['Property2Min'], result['Property2Max'], dump)
-
  		cursor = sqlite3.connect('data.db').cursor()
  		print ("Database connected")
  		# #query
