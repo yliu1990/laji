@@ -61,13 +61,20 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
+@app.route('/post', methods=['GET'])
+
 @app.route('/', methods=['GET','POST'])
 def home():
 	return render_template('home.html')
 
-@app.route('/post', methods=['POST'])
+def post(newrecord):
+	return render_template('post.html')
 
-def postrecord(newrecord):
+@app.route('/postresult', methods=['POST'])
+
+def postresult():
+	data = request.form
+	newrecord = Record()
 	cursor = sqlite3.connect('data.db').cursor()
 	# # insert to table
 	sql = "INSERT INTO data (Chemical_formula, Property_1_name, Property_1_value, Property_2_name , Property_2_value ) VALUES ("+str(newrecord.name) + ", "+ str(newrecord.property1) + ", " + str(newrecord.value1),+", "+ str(newrecord.property2) + ", "+str(newrecord.value2)+")"
@@ -80,35 +87,34 @@ def postrecord(newrecord):
 
 @app.route('/queryresult', methods=['POST'])
 def queryresult():    # query based on input search criterias
-	result = request.form
-	print (result)
-	if result['Dump'] =='y':
+	data = request.form
+	if data['Dump'] =='y':
 		dump = True;
 	else:
 		dump = False;
-	print ('fuck')
-	search = criterias(result['Name'], result['Property1'], result['Property1Min'], result['Property1Max'], result['Property2'], result['Property2Min'], result['Property2Max'], dump)
-	cursor = sqlite3.connect('data.db').cursor()
-	print ("Database connected")
-	# #query
-	sql = "SELECT * FROM data WHERE " + search.sql()
-	print (sql)
-	cursor.execute(sql)
-	result = cursor.fetchall()
-	print ("Query successful!")
-	print (result)
-	cursor.close()
-	sqlite3.connect('data.db').close()
-	if search.dump_res==True:    #if chosen to dump the search result
-		with open('Lastquery.csv', 'w') as f_handle:
-			writer = csv.writer(f_handle)
-			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
-			writer.writerow(header)
-			for row in result:
-				writer.writerow(row)
-	return jsonify({'laji': 'laji'})
+	search = criterias(data['Name'], data['Property1'], data['Property1Min'], data['Property1Max'], data['Property2'], data['Property2Min'], data['Property2Max'], dump)
+ 	cursor = sqlite3.connect('data.db').cursor()
+ 	print ("Database connected")
+ 	# #query
+ 	sql = "SELECT * FROM data WHERE " + search.sql()
+ 	print (sql)
+ 	cursor.execute(sql)
+ 	result = cursor.fetchall()
+ 	print ("Query successful!")
+ 	print result
+ 	cursor.close()
+ 	sqlite3.connect('data.db').close()
+ 	if search.dump_res==True:    #if chosen to dump the search result
+ 		with open('Lastquery.csv', 'w') as f_handle:
+ 			writer = csv.writer(f_handle)
+ 			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
+ 			writer.writerow(header)
+ 			for row in result:
+ 				writer.writerow(row)
+ 	return jsonify({'laji': 'laji'})
 
-@app.route('/query', methods=['GET','POST'])
+
+@app.route('/query', methods=['GET'])
 def query():
 	return render_template('query.html')
 
