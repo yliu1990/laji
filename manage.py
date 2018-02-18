@@ -1,4 +1,4 @@
-import sys
+#import sys
 # reload(sys)
 # sys.setdefaultencoding( "utf-8" )
 import sqlite3
@@ -93,6 +93,9 @@ def query(search):    # query based on input search criterias
 			for row in result:
 				writer.writerow(row)
 
+@app.route('/', methods=['GET'])
+def home():
+  return "LAJI"
 
 @app.errorhandler(404)  
 def page_not_found(e):   #error handler
