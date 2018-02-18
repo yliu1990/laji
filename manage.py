@@ -4,6 +4,7 @@
 import sqlite3
 from flask import g
 from flask import Flask,jsonify
+from flask import render_template, request
 import csv
 
 app = Flask(__name__)
@@ -95,7 +96,14 @@ def query(search):    # query based on input search criterias
 
 @app.route('/', methods=['GET'])
 def home():
-  return "LAJI"
+	return render_template('query.html')
+
+@app.route('/result',methods = ['POST', 'GET'])
+def result():
+	if request.method == 'POST':
+		result = request.form
+		return render_template("result.html",result = result)
+
 
 @app.errorhandler(404)  
 def page_not_found(e):   #error handler
