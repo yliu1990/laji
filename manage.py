@@ -67,10 +67,9 @@ def postrecord(newrecord):
 	sql = "INSERT INTO data (Chemical_formula, Property_1_name, Property_1_value, Property_2_name , Property_2_value ) VALUES ("+str(newrecord.name) + ", "+ str(newrecord.property1) + ", " + str(newrecord.value1),+", "+ str(newrecord.property2) + ", "+str(newrecord.value2)+")"
 	cursor.execute(sql)
 	result = cursor.fetchall()
-	print ("Insert successful!")
 	cursor.close()
 	sqlite3.connect('data.db').close()
-
+	return "Insert successful!"
 
 
 @app.route('/<int:user_id>', methods=['GET'])
@@ -92,10 +91,17 @@ def query(search):    # query based on input search criterias
 			writer.writerow(header)
 			for row in result:
 				writer.writerow(row)
-
+	return jsonify(
+		{
+			'Chemical formula': result[0][0], 
+			'Property 1 name': result[0][1], 
+			'Property 1 value': result[0][2], 
+			'Property 2 name': result[0][3] , 
+			'Property 2 value': result[0][4]
+		})
 @app.route('/', methods=['GET'])
 def home():
-  return "LAJI"
+  return "Welcome!"
 
 @app.errorhandler(404)  
 def page_not_found(e):   #error handler
