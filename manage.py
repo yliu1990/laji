@@ -36,17 +36,17 @@ class criterias(object): #object of a search criteria
 			criteria = "Chemical_formula LIKE " + """'%"""+self.name + """%'"""
 			criterialist.append(criteria)
 		if self.property1!="":
-			criteria = "Property_1_name = " +self.property1 + " AND Property_1_value >= " + self.value1min + " AND Property_1_value <= " + self.value1max
+			criteria = "Property_1_name = '"  + self.property1 + "'"+ " AND Property_1_value >= " + self.value1min + " AND Property_1_value <= " + self.value1max
 			criterialist.append(criteria)
 		if self.property2!="":
-			criteria = "Property_2_name = " +self.property1 + " AND Property_2_value >= " + self.value2min + " AND Property_2_value <= " + self.value2max
+			criteria = "Property_2_name = '"  + self.property1 +"'"+ " AND Property_2_value >= " + self.value2min + " AND Property_2_value <= " + self.value2max
 			criterialist.append(criteria)
 		count = 0
-		for criteria in crterialist:
+		for criteria in criterialist:
 			statement += criteria
 			count += 1
 			if count!=len(criterialist):
-				statement += "AND "
+				statement += " AND "
 		return statement
 
 def connect_db():
@@ -76,41 +76,33 @@ def postrecord(newrecord):
 
 @app.route('/queryresult', methods=['POST'])
 def queryresult():    # query based on input search criterias
- 	if request.method == 'POST':
-		result = request.form
-		print result
-		if result['Dump'] =='y':
-			dump = True;
-		else:
-			dump = False;
-		print ('fuck')
-		search = criterias(result['Name'], result['Property1'], result['Property1Min'], result['Property1Max'], result['Property2'], result['Property2Min'], result['Property2Max'], dump)
- 		cursor = sqlite3.connect('data.db').cursor()
- 		print ("Database connected")
- 		# #query
- 		sql = "SELECT * FROM data WHERE " + search.sql()
- 		print (sql)
- 		cursor.execute(sql)
- 		result = cursor.fetchall()
- 		print ("Query successful!")
- 		print (sql)
- 		cursor.close()
- 		sqlite3.connect('data.db').close()
- 		# if search.dump_res==True:    #if chosen to dump the search result
- 		# 	with open('Lastquery.csv', 'w', newline='') as f_handle:
- 		# 		writer = csv.writer(f_handle)
- 		# 		header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
- 		# 		writer.writerow(header)
- 		# 		for row in result:
- 		# 			writer.writerow(row)
- 		return jsonify(
-		{
-			'Chemical_formula': result[0][0],
-			'Property_1_name': result[0][1],
-			'Property_1_value': result[0][2],
-			'Property_2_name': result[0][3],
-			'Property_2_value': result[0][4],
-		})
+	result = request.form
+	print result
+	if result['Dump'] =='y':
+		dump = True;
+	else:
+		dump = False;
+	print ('fuck')
+	search = criterias(result['Name'], result['Property1'], result['Property1Min'], result['Property1Max'], result['Property2'], result['Property2Min'], result['Property2Max'], dump)
+ 	cursor = sqlite3.connect('data.db').cursor()
+ 	print ("Database connected")
+ 	# #query
+ 	sql = "SELECT * FROM data WHERE " + search.sql()
+ 	print (sql)
+ 	cursor.execute(sql)
+ 	result = cursor.fetchall()
+ 	print ("Query successful!")
+ 	print result
+ 	cursor.close()
+ 	sqlite3.connect('data.db').close()
+ 	if search.dump_res==True:    #if chosen to dump the search result
+ 		with open('Lastquery.csv', 'w') as f_handle:
+ 			writer = csv.writer(f_handle)
+ 			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
+ 			writer.writerow(header)
+ 			for row in result:
+ 				writer.writerow(row)
+ 	return jsonify({'laji': 'laji'})
 
 @app.route('/query', methods=['GET','POST'])
 def query():
