@@ -61,6 +61,10 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
+@app.route('/', methods=['GET','POST'])
+def home():
+	return render_template('home.html')
+
 @app.route('/post', methods=['POST'])
 
 def postrecord(newrecord):
