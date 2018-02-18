@@ -61,17 +61,16 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
-@app.route('/post', methods=['GET','POST'])
 
 @app.route('/', methods=['GET','POST'])
 def home():
 	return render_template('home.html')
 
-def post(newrecord):
+@app.route('/post', methods=['GET','POST'])
+def post():
 	return render_template('post.html')
 
 @app.route('/postresult', methods=['POST'])
-
 def postresult():
 	data = request.form
 	newrecord = Record(data['Name'], data['Property1'], data['Value1'],  data['Property2'], data['Value2'])
