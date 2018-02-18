@@ -61,6 +61,10 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
+@app.route('/', methods=['GET','POST'])
+def home():
+	return render_template('home.html')
+
 @app.route('/post', methods=['POST'])
 
 def postrecord(newrecord):
@@ -77,32 +81,32 @@ def postrecord(newrecord):
 @app.route('/queryresult', methods=['POST'])
 def queryresult():    # query based on input search criterias
 	result = request.form
-	print result
+	print (result)
 	if result['Dump'] =='y':
 		dump = True;
 	else:
 		dump = False;
 	print ('fuck')
 	search = criterias(result['Name'], result['Property1'], result['Property1Min'], result['Property1Max'], result['Property2'], result['Property2Min'], result['Property2Max'], dump)
- 	cursor = sqlite3.connect('data.db').cursor()
- 	print ("Database connected")
- 	# #query
- 	sql = "SELECT * FROM data WHERE " + search.sql()
- 	print (sql)
- 	cursor.execute(sql)
- 	result = cursor.fetchall()
- 	print ("Query successful!")
- 	print result
- 	cursor.close()
- 	sqlite3.connect('data.db').close()
- 	if search.dump_res==True:    #if chosen to dump the search result
- 		with open('Lastquery.csv', 'w') as f_handle:
- 			writer = csv.writer(f_handle)
- 			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
- 			writer.writerow(header)
- 			for row in result:
- 				writer.writerow(row)
- 	return jsonify({'laji': 'laji'})
+	cursor = sqlite3.connect('data.db').cursor()
+	print ("Database connected")
+	# #query
+	sql = "SELECT * FROM data WHERE " + search.sql()
+	print (sql)
+	cursor.execute(sql)
+	result = cursor.fetchall()
+	print ("Query successful!")
+	print (result)
+	cursor.close()
+	sqlite3.connect('data.db').close()
+	if search.dump_res==True:    #if chosen to dump the search result
+		with open('Lastquery.csv', 'w') as f_handle:
+			writer = csv.writer(f_handle)
+			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
+			writer.writerow(header)
+			for row in result:
+				writer.writerow(row)
+	return jsonify({'laji': 'laji'})
 
 @app.route('/query', methods=['GET','POST'])
 def query():
