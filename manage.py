@@ -77,7 +77,7 @@ def postresult():
 	newrecord = Record(data['Name'], data['Property1'], data['Value1'],  data['Property2'], data['Value2'])
 	cursor = sqlite3.connect('data.db').cursor()
 	# # insert to table
-	sql = "INSERT INTO data (Chemical_formula, Property_1_name, Property_1_value, Property_2_name , Property_2_value ) VALUES ("+str(newrecord.name) + ", "+ str(newrecord.property1) + ", " + str(newrecord.value1),+", "+ str(newrecord.property2) + ", "+str(newrecord.value2)+")"
+	sql = "INSERT INTO data (Chemical_formula, Property_1_name, Property_1_value, Property_2_name , Property_2_value ) VALUES (" + str(newrecord.name) + ", "+ str(newrecord.property1) + ", " + str(newrecord.value1) + ", " + str(newrecord.property2) + ", "+str(newrecord.value2)+")"
 	print (sql)
 	cursor.execute(sql)
 	result = cursor.fetchall()
