@@ -4,6 +4,7 @@
 import sqlite3
 from flask import g
 from flask import Flask,jsonify
+from flask import render_template, request
 import csv
 
 app = Flask(__name__)
@@ -59,7 +60,7 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
-@app.route('/postrecord', methods=['GET','POST'])
+@app.route('/<int:user_id>', methods=['POST'])
 
 def postrecord(newrecord):
 	cursor = sqlite3.connect('data.db').cursor()
@@ -67,41 +68,42 @@ def postrecord(newrecord):
 	sql = "INSERT INTO data (Chemical_formula, Property_1_name, Property_1_value, Property_2_name , Property_2_value ) VALUES ("+str(newrecord.name) + ", "+ str(newrecord.property1) + ", " + str(newrecord.value1),+", "+ str(newrecord.property2) + ", "+str(newrecord.value2)+")"
 	cursor.execute(sql)
 	result = cursor.fetchall()
+	print ("Insert successful!")
 	cursor.close()
 	sqlite3.connect('data.db').close()
-	return "Insert successful!"
 
 
-@app.route('/query', methods=['GET','POST'])
-def query(search):    # query based on input search criterias
-	cursor = sqlite3.connect('data.db').cursor()
 
-	# #query
-	sql = "SELECT * FROM data WHERE " + search.sql()
-	cursor.execute(sql)
-	result = cursor.fetchall()
-	print ("Query successful!")
-	print (sql)
-	cursor.close()
-	sqlite3.connect('data.db').close()
-	if search.dump_res==True:    #if chosen to dump the search result
-		with open('Lastquery.csv', 'w', newline='') as f_handle:
-			writer = csv.writer(f_handle)
-			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
-			writer.writerow(header)
-			for row in result:
-				writer.writerow(row)
-	return jsonify(
-		{
-			'Chemical formula': result[0][0], 
-			'Property 1 name': result[0][1], 
-			'Property 1 value': result[0][2], 
-			'Property 2 name': result[0][3] , 
-			'Property 2 value': result[0][4]
-		})
+# @app.route('/<int:user_id>', methods=['GET'])
+# def query(search):    # query based on input search criterias
+# 	cursor = sqlite3.connect('data.db').cursor()
+
+# 	# #query
+# 	sql = "SELECT * FROM data WHERE " + search.sql()
+# 	cursor.execute(sql)
+# 	result = cursor.fetchall()
+# 	print ("Query successful!")
+# 	print (sql)
+# 	cursor.close()
+# 	sqlite3.connect('data.db').close()
+# 	if search.dump_res==True:    #if chosen to dump the search result
+# 		with open('Lastquery.csv', 'w', newline='') as f_handle:
+# 			writer = csv.writer(f_handle)
+# 			header = ['Chemical formula', 'Property 1 name', 'Property 1 value', 'Property 2 name' , 'Property 2 value']
+# 			writer.writerow(header)
+# 			for row in result:
+# 				writer.writerow(row)
+
 @app.route('/', methods=['GET','POST'])
 def home():
-  return "Welcome!"
+	return render_template('query.html')
+
+@app.route('/result',methods = ['POST', 'GET'])
+def result():
+	if request.method == 'POST':
+		result = request.form
+		return render_template("result.html",result = result)
+
 
 @app.errorhandler(404)  
 def page_not_found(e):   #error handler
