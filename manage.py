@@ -59,7 +59,7 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
-@app.route('/<int:user_id>', methods=['POST'])
+@app.route('/postrecord', methods=['GET','POST'])
 
 def postrecord(newrecord):
 	cursor = sqlite3.connect('data.db').cursor()
@@ -72,7 +72,7 @@ def postrecord(newrecord):
 	return "Insert successful!"
 
 
-@app.route('/<int:user_id>', methods=['GET'])
+@app.route('/query', methods=['GET','POST'])
 def query(search):    # query based on input search criterias
 	cursor = sqlite3.connect('data.db').cursor()
 
@@ -99,7 +99,7 @@ def query(search):    # query based on input search criterias
 			'Property 2 name': result[0][3] , 
 			'Property 2 value': result[0][4]
 		})
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET','POST'])
 def home():
   return "Welcome!"
 
